@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primeira pagina</title>
+</head>
+<style>
+    *{
+        background-color: #f5f3f4;
+    }
+    h1{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    
+    form{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    
+    
+    .button{
+        background-color: #B6D7B9;
+        border: none;
+        font-weight: bold;
+        width: 120px;
+        height: 40px;
+        border-radius: 20px;
+    }
+    
+    .formulario{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 500px;
+        height: 500px
+    }
+    
+    .text{
+        display: flex;
+        flex-direction: column;
+        /* background-color: #B6D7B9; */
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        width: 500px;
+        height: 500px;
+        justify-content: center;
+        align-items: center;
+        
+    }
+    input{
+        border-radius: 10px; 
+        width: 300px; 
+        height: 30px;
+        background-color: #fff;
+    
+    }
+    
+    .botao{
+        padding: 50px;
+    }
+    
+    button{
+        border-radius: 20px;
+        background-color: #a8e2ca;
+        width: 100px; 
+        height: 30px;
+        border: none;
+        font-weight: bold;
+    }
+    
+    button:hover{
+        background-color:#48ac51ad;
+        transition: 1s;
+    }
+    
+    
+    .form-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 90px;
+    }
+</style>
+<body>
+    <h1>BackEnd - WebServer</h1>
+    <form>
+        <input class="button" type="button" value="Clique Aqui" onclick="msg()">
+    </form>
+
+    <div class="form-container">
+        <div class="formulario">
+            <div class="text">
+                <h2>LOGIN</h2>
+                <p>Nome:</p>
+                <input type="email" placeholder="Informe seu nome">
+
+                <p>Senha:</p>
+                <input type="password" placeholder="Informe seu e-mail">
+
+                <div class="botao">
+                <button>Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+      
+</body>
+<script>
+    function msg() {
+      alert("Nesta aula estamos aprendendo sobre web server!");
+    }
+    </script>
+</html>
