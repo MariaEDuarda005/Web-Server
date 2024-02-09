@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<style type="text/css">
+<style>
     @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;1,300;1,400&display=swap');
 
     * {
@@ -85,10 +84,12 @@
         padding-top: 35px;
     }
 </style>
-
 <body>
     <div class="formulario">
         <div class="text">
+            <div class="error-message">
+                <!-- Mensagem de erro será inserida aqui -->
+            </div>
             <form action="/enviar_login" method="post">
                 <p class="title">LOGIN</p>   
                 <label for="name">Nome: </label>
@@ -106,5 +107,4 @@
         </div>
     </div>
 </body>
-
 </html>

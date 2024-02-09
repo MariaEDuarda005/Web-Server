@@ -42,18 +42,35 @@ class MyMandler(SimpleHTTPRequestHandler):
         # Caso dê erro
             except FileNotFoundError:
                 pass
+            
+        elif self.path == '/login_failed':
+            # Responde ao cliente a mensagem de login/senha incorreta
+            self.send_response(200)
+            self.send_header("Content-type", "text/html; charset=utf-8")
+            self.end_headers()
+            
+            # Lê o conteudo da pagina login.html
+            with open(os.path.join(os.getcwd(), 'login.html'), 'r', encoding='utf-8') as login_file:
+                content = login_file.read()
+                
+            # adiciona a mensagem de erro no conteudo da pagina
+            mensagem = "Login e/ou senha incorreta. Tente novamente"
+            content = content.replace('<!-- Mensagem de erro será inserida aqui -->',
+                                      f'<div class="error-message">{mensagem}</div>')
+            
+            # Envia o conteudo modificado para o cliente
+            self.wfile.write(content.encode('utf-8'))    
+        
         else:
             super().do_GET()
             
-    def usuario_existente(self, login):
+    def usuario_existente(self, login, senha):
         #verifica se o login já existe
-        with open('dados_login.txt', 'r') as file:
+        with open('dados_login.txt', 'r', encoding='utf-8') as file:
             for line in file:
-                stored_login, _ = line.strip().split(';')
-                print(login)
-                print(stored_login)
+                stored_login, stored_senha = line.strip().split(';')
                 if login == stored_login:
-                    return True
+                    return senha == stored_senha
         return False
  
     def do_POST(self):
@@ -74,8 +91,9 @@ class MyMandler(SimpleHTTPRequestHandler):
             
             # verifica se o usuario já existe
             login = form_data.get('email', [''])[0]
+            senha = form_data.get('senha', [''])[0]
             
-            if self.usuario_existente(login):
+            if self.usuario_existente(login, senha):
                 with open(os.path.join(os.getcwd(), 'cadastro_encontrado.html'), 'r', encoding='utf-8') as existe:
                     content_file = existe.read()
                 # responde ao cliente indicando que o usuario já consta nos registros
@@ -86,17 +104,24 @@ class MyMandler(SimpleHTTPRequestHandler):
                 self.wfile.write(content_file.encode('utf-8'))
             
             else:
-                with open ("dados_login.txt", "a", encoding="UTF-8") as arquivo:
-                    login = form_data.get('email',[''])[0]
-                    senha = form_data.get('senha',[''])[0]
-                    arquivo.write(f"{login};{senha}\n")
- 
-                with open(os.path.join(os.getcwd(), 'cadastro.html'), 'r', encoding='utf-8') as cadastro_file:
-                    contente = cadastro_file.read()
-                self.send_response(200)
-                self.send_header("Content-type", "text/html")
-                self.end_headers()
-                self.wfile.write(contente.encode('utf-8'))
+                if any(line.startswith(f"{login};") for line in open("dados_login.txt", "r", encoding="UTF-8")):
+                    self.send_response(302)
+                    self.send_header('Location', '/login_failed')
+                    self.end_headers()
+                    return # adicionando um return para evitar a execução 
+                
+                else:
+                    with open ("dados_login.txt", "a", encoding="UTF-8") as arquivo:
+                        login = form_data.get('email',[''])[0]
+                        senha = form_data.get('senha',[''])[0]
+                        arquivo.write(f"{login};{senha}\n")
+    
+                    with open(os.path.join(os.getcwd(), 'cadastro.html'), 'r', encoding='utf-8') as cadastro_file:
+                        contente = cadastro_file.read()
+                    self.send_response(200)
+                    self.send_header("Content-type", "text/html")
+                    self.end_headers()
+                    self.wfile.write(contente.encode('utf-8'))
         else:
             # Se não for a rota "/enviar_login", continua com o comportamento padrão
             super(MyMandler,self).do_POST()
