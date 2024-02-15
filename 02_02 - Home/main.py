@@ -5,6 +5,7 @@ from http.server import SimpleHTTPRequestHandler
 # Gerencia a comunicação com o cliente
 import socketserver
 from urllib.parse import parse_qs
+from urllib import urlparse, parse_qs
  
 # Criação de Classe com artificio de HTTP
 class MyMandler(SimpleHTTPRequestHandler):
@@ -60,6 +61,33 @@ class MyMandler(SimpleHTTPRequestHandler):
             
             # Envia o conteudo modificado para o cliente
             self.wfile.write(content.encode('utf-8'))    
+            
+        elif self.path.startswith('/cadastro'):
+            # extraindo os parâmetros da URL
+            query_params = parse_qs(urlparse(self.path).query)
+            login = query_params.get('login', [''])[0]
+            senha = query_params.get('senha', [''])[0]
+            
+            # mensagem de boas-vindas
+            welcome_message = f"Olá {login}, seja bem vindo! Percebemos que você é novo por aqui. Complete seu cadastro"
+
+            # Resposta ao cliente da pagina de cadastro
+            self.send_response(200)
+            self.send_header("Content-type", "text/html; charset=utf-8")
+            self.end_headers()
+            
+            with open(os.path.join(os.getcwd(), 'cadastro.html'), 'r', encoding='utf-8') as cadastro_file:
+                content = cadastro_file.read()
+                
+            # substitue os marcadores pelos valores
+            content = content.replace('{login}', login)
+            content = content.replace('{senha}', senha)
+            content = content.replace('{welcome_message}', welcome_message)
+            
+            # envia o conteudo modificado para o cliente
+            self.wfile.write(content.encode('utf-8'))
+            
+            return # adicionando o return para evitar a execução do restante do codigo
         
         else:
             super().do_GET()
@@ -72,6 +100,13 @@ class MyMandler(SimpleHTTPRequestHandler):
                 if login == stored_login:
                     return senha == stored_senha
         return False
+    
+    def remover_ultima_linha(self,arquivo):
+        print("Vou excluir a ultima linha")
+        with open(arquivo, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+        with open(arquivo, 'w', encoding='utf-8') as file:
+            file.writelines(lines[:-1])
  
     def do_POST(self):
         # Verifica se a rota é "/enviar_login"
@@ -81,7 +116,7 @@ class MyMandler(SimpleHTTPRequestHandler):
             # Lê o corpo da requisição
             body = self.rfile.read(content_length).decode('utf-8')
             # Parseia os dados o formulário
-            form_data = parse_qs(body)
+            form_data = parse_qs(body, keep_blank_values=True)
  
             print(form_data)
             # Exibe os dados no terminal
@@ -102,26 +137,80 @@ class MyMandler(SimpleHTTPRequestHandler):
                 self.end_headers()
                 #mensagem = f"Usuario {login} já consta em nossos registros"
                 self.wfile.write(content_file.encode('utf-8'))
+                
+            elif self.path.startswith('/confirmar_cadastro'):
+                # Obtém o comprimento do corpo da requisição
+                content_length = int(self.headers['Content-Lenght'])
+                # lê o corpo da requisição
+                body = self.rfile.read(content_length).decode('utf-8')
+                # parseia os dados dos formularios
+                form_data = parse_qs(body, keep_blank_values=True)
+                
+                # query_params = parse_qs(urlparse(self.path).query)
+                login = form_data.get('login', [''])[0]
+                senha = form_data.get('senha', [''])[0]
+                name = form_data.get('name', [''])[0]
+                
+                print("nome: " + name)
+                
+                if self.usuario_existente(login, senha):
+                    with open(os.path.join(os.getcwd(), 'confirmar_cadastro.html'), 'r', encoding='utf-8') as file:
+                        contentfile = file.read()
+                    # Atualiza o arquivo com o nome, se a senha estiver correta
+                    with open('dados_login.txt', 'r', encoding='utf-8') as file:
+                        lines = file.readlines()
+                    with open('dados_login.txt', 'w', encoding='utf-8') as file:
+                        for line in lines:
+                            stored_login, stored_senha = line.strip().split(';')
+                            if login == stored_login and senha == stored_senha:
+                                line = f"{login};{senha};{name}\n"
+                                
+                            file.write(line)
+                    
+                    # redireciona o cliente para onde desejar após a confirmação
+                    self.send_response(302)
+                    self.send_header("Content-type", "text/html; charset=utf-8")
+                    self.end_headers()
+                    # self.wfile.write("Registro recebido com sucesso!!!".encode('utf-8'))
+                    self.wfile.write(contentfile.encode('utf-8'))
+
+                    
+                else:
+                    # se o usuario não existe ou a senha está incorreta, redirecione para outra pagina
+                    self.remover_ultima_linha('dados_login.txt')
+                    self.send_response(302)
+                    self.send_header("Content-type", "text/html; charset=utf-8")
+                    self.end_headers()
+                    self.wfile.write("A senha não confere. Retome o procedimento".encode('utf-8'))
+                            
             
             else:
                 if any(line.startswith(f"{login};") for line in open("dados_login.txt", "r", encoding="UTF-8")):
+                    # redireciona para a pagina
                     self.send_response(302)
                     self.send_header('Location', '/login_failed')
                     self.end_headers()
                     return # adicionando um return para evitar a execução 
                 
                 else:
-                    with open ("dados_login.txt", "a", encoding="UTF-8") as arquivo:
-                        login = form_data.get('email',[''])[0]
-                        senha = form_data.get('senha',[''])[0]
-                        arquivo.write(f"{login};{senha}\n")
-    
-                    with open(os.path.join(os.getcwd(), 'cadastro.html'), 'r', encoding='utf-8') as cadastro_file:
-                        contente = cadastro_file.read()
-                    self.send_response(200)
-                    self.send_header("Content-type", "text/html")
+                    with open ("dados_login.txt", "a", encoding="UTF-8") as file:
+                        # login = form_data.get('email',[''])[0]
+                        # senha = form_data.get('senha',[''])[0]
+                        # file.write(f"{login};{senha}\n")
+                        file.write(f"{login};{senha};" + "none" + "\n")
+                    self.send_response(302)
+                    self.send_header('Location', f'/cadastro?login={login}&senha={senha}')
                     self.end_headers()
-                    self.wfile.write(contente.encode('utf-8'))
+                    
+                        
+                    # Redirecioa o cliente para a rota '/cadastro' com dados de login e senha
+                    # with open(os.path.join(os.getcwd(), 'cadastro.html'), 'r', encoding='utf-8') as cadastro_file:
+                    #     contente = cadastro_file.read()
+                    # self.send_response(200)
+                    # self.send_header("Content-type", "text/html")
+                    # self.end_headers()
+                    # self.wfile.write(contente.encode('utf-8'))
+                    return # adicionando um return para evitar a execução 
         else:
             # Se não for a rota "/enviar_login", continua com o comportamento padrão
             super(MyMandler,self).do_POST()
