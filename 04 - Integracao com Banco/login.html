@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+
+    * {
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    body {
+        background-color: #e7ecef;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 200px;
+    }
+
+    p {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 30px;
+    }
+
+    form{
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .formulario {
+        background-color: #6096ba;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        width: 500px;
+        height: 500px;
+        border-radius: 60px;
+    }
+
+    .text {
+        display: flex;
+        flex-direction: column;
+        
+    }
+
+    label{
+        padding: 10px;
+    }
+
+    input {
+        border-radius: 10px;
+        width: 300px;
+        height: 30px;
+    }
+
+    button {
+        border-radius: 20px;
+        background-color: #a8d5e2;
+        width: 100px;
+        height: 30px;
+        justify-content: center;
+        align-items: center;
+    }
+
+    button:hover {
+        background-color: #00a5cf;
+        transition: 1s;
+    }
+
+    .botao {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 35px;
+    }
+
+    .error-message{
+        color: rgb(177, 60, 60);
+        font-weight: bold;
+    }
+</style>
+<body>
+    <div class="formulario">
+        <div class="text">
+            <div class="error-message">
+                <!-- Mensagem de erro será inserida aqui -->
+            </div>
+            <form action="/enviar_login" method="post">
+                <p class="title">LOGIN</p>   
+                <label for="email">E-mail: </label>
+                <input id="item" type="text" name="email" placeholder="Insira seu E-mail">
+                <!-- <input type="email" placeholder="Informe seu nome"> -->
+                <label for="password">Senha: </label>
+                <input id="item" type="password" name="senha" placeholder="Insira sua senha">
+                <!-- <input type="password" placeholder="Informe seu e-mail"> -->
+                <button id="enviar">Enviar</button> 
+            </form>
+
+            <div class="error-message">
+				<!--Mensagem de erro inserida aqui-->
+			</div>
+        </div>
+    </div>
+</body>
+</html>

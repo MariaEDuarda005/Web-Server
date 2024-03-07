@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <title>Cadastro de Turmas</title>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    .adm {
+        display: flex;
+        background-color: #6ba6c2;
+        height: 60px;
+        align-items: center;
+        padding: 20px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+    }
+    .adm button.sair {
+        margin-left: auto;  
+        width: 150px;
+        height: 30px;
+        border-radius: 10px;
+        border: none;
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+    h1{
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        padding-top: 30px;
+        padding-bottom: 10px;
+    }
+
+    form{
+        margin-top: 150px;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(107, 166, 194, 0.8); 
+        width: 500px;
+        height: 300px;
+        border-radius: 10px;
+    }
+    input{
+        height: 30px;
+        width: 400px;
+        border-radius: 5px;
+    }
+    label{
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+    button{
+        width: 70px;
+        height: 25px;
+        border: none;
+        background-color: aliceblue;
+        border-radius: 5px;
+    }
+    .botao{
+        padding-top: 15px;
+        padding-bottom: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .turmas{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .error-message{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        color: red;
+    }
+</style>
+<body>
+    <div class="adm">
+        <h1>Ola Professor(a)</h1>
+        <button class="sair">Sair do Sistema</button>
+    </div>
+
+    
+
+    <div class="turmas">
+        
+        <form action="/cadastrar_atividade" method="post">
+            <h1>Adicionar atividades</h1>
+            <label for="">Número da atividade: </label>
+            <input id="item" type="text" name="codigo-atividade">
+
+            <label for="text">Descrição: </label>
+            <input id="item" type="text" name="descricao">
+            <div class="botao">
+                <button id="enviar">Cadastrar</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="error-message">
+        <!--Mensagem de erro inserida aqui-->
+    </div>
+    
+</body>
+</html>
