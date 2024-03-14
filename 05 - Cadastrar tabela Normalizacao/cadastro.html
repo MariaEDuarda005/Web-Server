@@ -12,6 +12,11 @@
         padding: 0;
         margin: 0;
     }
+
+    img{
+        height: 20px;
+        width: 20px;
+    }
  
     .cadastrar_turma{
         margin-left: auto;  
@@ -35,6 +40,11 @@
         border: none;
         font-size: 15px;
         font-weight: bold;
+    }
+
+    .nomes{
+        display: flex;
+        flex-direction: column;
     }
 
     form{
@@ -87,34 +97,70 @@
         font-weight: bold;
     }
 
+    table{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 5px;
+        font-size: 15px;
+    }
+
 </style>
 	<body>
             <div class="adm">
-                <h1>Ola Professor(a)</h1>
+                <div class="nomes">
+                    <h1>Ola Professor(a)</h1>
+                    <h2>{nome_professor}</h2>
+                </div>
                 <button class="sair">Sair do Sistema</button>
             </div>
             <main>
                 <div class="form-turma">
                         <form action="/cadastrar_turma" method="post">
+                            <h3>Associar Turmas ao Professor</h3>
+                            <hr>
                             <div class="form">
-                                <h1>Cadastre a Turma</h1>
-                                <label for="">Código da Turma</label>
-                                <input type="text" name="codigo-turma">
-                                <label for="descrition">Descrição</label>
-                                <input type="text" name="descricao">
+                                <h1>Cadastro de Turmas</h1>
+                                <label>Descrição:</label>
+                                <input type="text" id="descTurma" name="descTurma" required>
+                                <input type="hidden" id="id_professor" name="id_professor" value="{id_professor}">
+                                <input type="hidden" id="login" name="login" value="{login}">
                                 <div class="botaocad">
                                     <button id="enviar">Cadastrar</button>
                                 </div>
                             </div>
+
+                            <hr/>
+                            
+                                
+                            
                         </form>
-                    <div class="error-message">
-                        <!--Mensagem de erro inserida aqui-->
-                    </div>
+                        <table>
+                            <!-- tabela com linhas zebradas -->
+                        </table>
                 </div>
 
-                <h4>Turmas Professor</h4>
-                <h3></h3>
+                <div class="error-message">
+                    <!--Mensagem de erro inserida aqui-->
+                </div>
+
+                
+<!--                     
+                    <form action="/cadastrar_turma" method="post">
+                        <h1>Cadastro de Turmas</h1>
+                        <label>Descrição:</label>
+                        <input type="text" id="descTurma" name="descTurma" required>
+                        <input type="hidden" id="id_professor" name="id_professor" value="{id_professor}">
+                        <input type="hidden" id="login" name="login" value="{login}">
+
+                        <button type="submit">Cadastrar</button>
+                    </form>
+                    <hr/>
+                    <table>
+                        <!- tabela com linhas zebradas ->
+                    </table> -->
+
             </main>
-        
 	</body>
 </html>
+

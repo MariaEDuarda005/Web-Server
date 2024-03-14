@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style type="text/css">
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;1,300;1,400&display=swap');
+    * {
+        font-family: 'Open Sans', sans-serif;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .cadastrar_turma{
+        margin-left: auto;  
+        width: 150px;
+        height: 30px;
+    padding-top: 30px;
+    }	
+    .adm {
+        display: flex;
+        background-color: #6ba6c2;
+        height: 60px;
+        align-items: center;
+        padding: 20px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+    }
+    .adm button.sair {
+        margin-left: auto;  
+        width: 150px;
+        height: 30px;
+        border-radius: 10px;
+        border: none;
+        font-size: 15px;
+        font-weight: bold;
+    }
+    .adicionar {
+        border: none;
+        background-color: #aef099;
+        width: 100px;
+        height: 30px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .excluir {
+        border: none;
+        background-color: #e34b4b;
+        width: 100px;
+        height: 30px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .tabela {
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: nowrap;
+        flex-direction: column;
+        border-collapse: separate;
+        border-spacing: 0 15px;
+        margin-top: 50px;
+    }
+    td {
+        border-left-width: 0;
+        min-width: 120px;
+        height: 60px;
+        padding: 20px 20px 20px 20px;
+    }
+    td:first-child {
+        border-left-width: 10px;
+    }
+    #style_table {
+        display: flex;
+    }
+    #style_table th, #style_table td {
+        border-bottom: 1px solid black;
+        background-color: #edf2f4;
+        font-size: 15px;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+
+    }
+    .cadastrar {
+        border: none;
+        background-color: #aef099;
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .botaocad{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        padding: 10px;
+        gap: 20px;
+    }
+
+    .botaocad button{
+        border: none;
+        background-color: #6ba6c2;
+        width: 150px;
+        height: 30px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+</style>
+    <body>
+            <div class="adm">
+                <h1>Ola Professor(a)</h1>
+                <button class="sair">Sair do Sistema</button>
+            </div>
+            <!-- <button class="cadastrar_turma">Cadastrar Turma</button> -->
+            <div class="tabela">
+            <table id="style_table">
+                <tr>
+                    <td>Numero</td>
+                    <td>Turma</td>
+                    <td>Atividade</td>
+                    <td>Acao</td>
+                </tr>
+                <!-- TURMAS_AQUI -->
+                <tr>
+                    <td>1</td>
+                    <td>Desenvolvimento de sistemas SA01</td>
+                    <td>Python</td>
+                    <td>
+                    <div class="opcoes">
+                    <button class="adicionar">Adicionar</button>
+                    <button class="excluir">Excluir</button>
+                    </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Redes de computadores SN02</td>
+                    <td>Java</td>
+                    <td>
+                    <div class="opcoes">
+                    <button class="adicionar">Adicionar</button>
+                    <button class="excluir">Excluir</button>
+                    </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Desenvolvimento de sistemas B402</td>
+                    <td>Power BI</td>
+                    <td>
+                    <div class="opcoes">
+                    <button class="adicionar">Adicionar</button>
+                    <button class="excluir">Excluir</button>
+                    </div>
+                    </td>
+                </tr> 
+            </table>
+            </div>
+            
+                <div class="botaocad">
+                    <form action="/cadastrar_turma"><button type="submit" name="tela_cadastro">Cadastrar Turma</button></form>
+                    <form action="/cadastrar_atividade"><button type="submit" name="tela_cadastro">Cadastrar Atividade</button></form>
+                </div>
+    </body>
+</html>
