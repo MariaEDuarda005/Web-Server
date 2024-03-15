@@ -3,18 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-    <title>Cadastro de Turmas</title>
+    <title>Document</title>
 </head>
-<style>
+<style type="text/css">
     @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;1,300;1,400&display=swap');
-
-    *{
-        margin: 0;
+    * {
+        font-family: 'Open Sans', sans-serif;
         padding: 0;
+        margin: 0;
     }
+
+    img{
+        height: 20px;
+        width: 20px;
+    }
+ 
+    .cadastrar_turma{
+        margin-left: auto;  
+        width: 150px;
+        height: 30px;
+        padding-top: 30px;
+    }	
     .adm {
         display: flex;
         background-color: #6ba6c2;
@@ -33,88 +42,112 @@
         font-weight: bold;
     }
 
-    h1{
-        justify-content: center;
-        align-items: center;
+    .nomes{
         display: flex;
-        padding-top: 30px;
-        padding-bottom: 10px;
+        flex-direction: column;
     }
 
     form{
-        margin-top: 150px;
         display: flex;
         flex-direction: column;
-        flex-wrap: nowrap;
         justify-content: center;
         align-items: center;
-        background-color: rgba(107, 166, 194, 0.8); 
+        padding-top: 60px;
+    }
+
+    .form{
+        background-color: #6ba6c2;
         width: 500px;
-        height: 300px;
-        border-radius: 10px;
+        height: 400px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-radius: 15px;
     }
-    input{
-        height: 30px;
-        width: 400px;
-        border-radius: 5px;
-    }
+
     label{
-        padding-top: 15px;
-        padding-bottom: 15px;
+        margin: 20px;
     }
-    button{
-        width: 70px;
+
+    input{
+        width: 200px;
         height: 25px;
-        border: none;
-        background-color: aliceblue;
-        border-radius: 5px;
+        border-radius: 6px;
     }
-    .botao{
-        padding-top: 15px;
-        padding-bottom: 15px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .turmas{
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+
     .error-message{
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 20px;
         color: red;
+        margin-top: 20px;
     }
+
+    .botaocad{
+        margin: 25px;
+    }
+
+    .botaocad button{
+        border: none;
+        background-color: #ffffff;
+        width: 80px;
+        height: 25px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+    table{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 5px;
+        font-size: 15px;
+    }
+
+    table td{
+        font-size: 20px;
+    }
+
 </style>
-<body>
-    <div class="adm">
-        <h1>Ola Professor(a)</h1>
-        <button class="sair">Sair do Sistema</button>
-    </div>
-
-    
-
-    <div class="turmas">
-        
-        <form action="/cadastrar_atividade" method="post">
-            <h1>Adicionar atividades</h1>
-            <label for="">Número da atividade: </label>
-            <input id="item" type="text" name="codigo-atividade">
-
-            <label for="text">Descrição: </label>
-            <input id="item" type="text" name="descricao">
-            <div class="botao">
-                <button id="enviar">Cadastrar</button>
+	<body>
+            <div class="adm">
+                <div class="nomes">
+                    <h1>Ola Professor(a)</h1>
+                    <h2>{nome_professor}</h2>
+                </div>
+                <button class="sair">Sair do Sistema</button>
             </div>
-        </form>
-    </div>
+            <main>
+                <div class="form-turma">
+                        <form action="/cadastrar_atividade" method="post">
+                            <h3>Associar Atividades ao Professor</h3>
+                            <hr>
+                            <div class="form">
+                                <h1>Cadastro de Atividades</h1>
+                                <label>Descrição:</label>
+                                <input type="text" id="descAtividade" name="descAtividade" required>
+                                <input type="hidden" id="id_turma" name="id_turma" value="{id_turma}">
+                                <div class="botaocad">
+                                    <button id="enviar">Cadastrar</button>
+                                </div>
+                            </div>
 
-    <div class="error-message">
-        <!--Mensagem de erro inserida aqui-->
-    </div>
-    
-</body>
+                            <hr/>
+                            
+                                
+                            
+                        </form>
+                        <table>
+                            <!-- tabela com linhas zebradas -->
+                        </table>
+                </div>
+
+                <div class="error-message">
+                    <!--Mensagem de erro inserida aqui-->
+                </div>
+
+            </main>
+	</body>
 </html>
+

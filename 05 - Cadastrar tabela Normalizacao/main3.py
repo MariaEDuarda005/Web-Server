@@ -72,17 +72,22 @@ class MyHandler(SimpleHTTPRequestHandler):
              self.send_response(200)
              self.send_header("content-type", "text/html; charset=utf-8")
              self.end_headers()
-             with open(os.path.join(os.getcwd(), 'cadastro.html'), 'r', encoding='utf-8') as file:
+             with open(os.path.join(os.getcwd(), 'cadastro_turma.html'), 'r', encoding='utf-8') as file:
                 content = file.read()
                 self.wfile.write(content.encode('utf-8'))
                 return
         
         elif self.path.startswith('/cadastrar_atividade'):
-             self.send_response(200)
-             self.send_header("content-type", "text/html; charset=utf-8")
-             self.end_headers()
-             with open(os.path.join(os.getcwd(), 'cadastro_atividade.html'), 'r', encoding='utf-8') as file:
+            query_params = parse_qs(urlparse(self.path).query)
+            id_professor = query_params.get('id_professor', [''])[0]
+            id_turma = query_params.get('id_turma', [''])[0]
+            print(" ",id_professor,"", id_turma)
+            self.send_response(200)
+            self.send_header("content-type", "text/html; charset=utf-8")
+            self.end_headers()
+            with open(os.path.join(os.getcwd(), 'cadastro_atividade.html'), 'r', encoding='utf-8') as file:
                 content = file.read()
+                content = content.replace('{id_turma}', str(id_turma))
                 self.wfile.write(content.encode('utf-8'))
                 return   
         else:
@@ -172,12 +177,65 @@ class MyHandler(SimpleHTTPRequestHandler):
         for turma in turmas:
             id_turma = turma[0]
             descricao_turma = turma[1]
-            link_atividade = "<img src='icnatividade2.png'/>"
+            link_atividade = "<a href='/cadastrar_atividade?id_professor={}&id_turma={}'><img src='icnatividade2.png'/></a>".format(id_professor,id_turma)
             linha = "<tr><td style='text-align:center'>{}</td><td style='text-align:center'>{}</td></tr>".format(
                 descricao_turma,link_atividade)
             linhas_tabela += linha
             
-        with open(os.path.join(os.getcwd(), 'cadastro.html'), 'r', encoding='utf-8') as cad_turma_file:
+        with open(os.path.join(os.getcwd(), 'cadastro_turma.html'), 'r', encoding='utf-8') as cad_turma_file:
+            content = cad_turma_file.read()
+            content = content.replace('{nome_professor}', resultado[1])
+            content = content.replace('{id_professor}', str(id_professor))
+            content = content.replace('{login}', str(login))
+            
+        # substituindo o marcador de posição pelas linhas da tabela
+        content = content.replace('<!-- tabela com linhas zebradas -->', linhas_tabela)
+        self.send_response(200)
+        self.send_header("content-type", "text/html; charset=utf-8")
+        self.end_headers()
+        
+        self.wfile.write(content.encode('utf-8'))
+        
+    def adicionar_atividades_professor(self,descAtividade, id_atividade):
+        cursor = conexao.cursor()
+        cursor.execute("INSERT INTO atividades (descricao) VALUES (%s)", (descAtividade,))
+        cursor.execute("SELECT id_atividade FROM atividades WHERE descricao = %s", (descAtividade,))
+        resultado = cursor.fetchone()
+        cursor.execute("INSERT INTO atividades_turma (id_turma, id_atividade) VALUES (%s, %s)", (resultado[0], id_atividade))
+        conexao.commit()
+        cursor.close()
+        
+    def carrega_atividades_professor(self, login):
+        cursor = conexao.cursor()
+        cursor.execute("SELECT id_professor, nome FROM dados_login WHERE login = %s", (login,))
+        resultado = cursor.fetchone()
+        print(resultado)
+        cursor.close()
+        
+        # resultado[0] tras o id professor e o resultado[1] tras o nome do professor
+        id_professor = resultado[0]
+        
+        print(id_professor)
+        
+        #codigo para obter as turmas professor
+        cursor = conexao.cursor()
+        cursor.execute(
+            "SELECT atividades.id_atividade, atividades.descricao FROM atividades_turma INNER JOIN atividades ON atividades_turma.id_atividade = atividades.id_atividade WHERE atividades_turma.id_turma = id_turma = %s",(id_atividade,))
+        atividades = cursor.fetchall()
+        print(atividades)
+        cursor.close()
+        
+        # Construindo dinamicamente as linhas da tabela com as turmas do professor
+        linhas_tabela = ""
+        for atividade in atividades:
+            id_atividade = atividade[0]
+            descricao_atividade = atividade[1]
+            link_atividade = "<img src='icnatividade3.png'/>"
+            linha = "<tr><td style='text-align:center'>{}</td><td style='text-align:center'>{}</td></tr>".format(
+                descricao_atividade,link_atividade)
+            linhas_tabela += linha
+            
+        with open(os.path.join(os.getcwd(), 'cadastro_atividade.html'), 'r', encoding='utf-8') as cad_turma_file:
             content = cad_turma_file.read()
             content = content.replace('{nome_professor}', resultado[1])
             content = content.replace('{id_professor}', str(id_professor))
@@ -252,10 +310,12 @@ class MyHandler(SimpleHTTPRequestHandler):
             nome = form_data.get('nome', [''])[0]
             
             self.adicionar_usuario(login,senha,nome)
-            self.send_response(302)
-            self.send_header('Location', '/page_professor.html')
-            # self.send_header('Content-type', 'text/html; charset=utf-8')
-            self.end_headers()
+            
+            # self.adicionar_usuario(login,senha,nome)
+            # self.send_response(302)
+            # self.send_header('Location', '/page_professor.html')
+            # self.end_headers()
+            self.carrega_turmas_professor(login)
         
         elif self.path.startswith('/cadastrar_turma'):
             content_length =  int(self.headers['content-length'])
@@ -276,12 +336,13 @@ class MyHandler(SimpleHTTPRequestHandler):
                 self.send_header("Content-type", "text/html; charset=utf-8")
                 self.end_headers()
                 # Ler o conteúdo original do arquivo ou variável
-                with open('cadastro.html', 'r', encoding='utf-8') as file:
+                with open('cadastro_turma.html', 'r', encoding='utf-8') as file:
                     content = file.read()
                 # Substituir o marcador pela mensagem de erro
                 content = content.replace('<!--Mensagem de erro inserida aqui-->', f'<div class="error-message">{mensagem_erro}</div>')
                 # Enviar a resposta com o conteúdo modificado
                 self.wfile.write(content.encode('utf-8'))
+                return
             
             elif self.turma_existente(descTurma) == True:
 
@@ -291,14 +352,17 @@ class MyHandler(SimpleHTTPRequestHandler):
                 self.end_headers()
 
                 # Ler o conteúdo original do arquivo ou variável
-                with open('cadastro.html', 'r', encoding='utf-8') as file:
+                with open('cadastro_turma.html', 'r', encoding='utf-8') as file:
                     content = file.read()
 
                 # Substituir o marcador pela mensagem de erro
-                content = content.replace('<!--Mensagem de erro inserida aqui-->', f'<div class="error-message">{mensagem_erro}</div>')
+                # content = content.replace('<!--Mensagem de erro inserida aqui-->', f'<div class="error-message">{mensagem_erro}</div>')
 
                 # Enviar a resposta com o conteúdo modificado
-                self.wfile.write(content.encode('utf-8'))
+                # self.wfile.write(content.encode('utf-8'))
+                
+                self.carrega_turmas_professor(login)
+                return
 
             else:
                 # Se os campos estiverem preenchidos, adiciona a turma
@@ -306,7 +370,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                 self.carrega_turmas_professor(login)
 
                 # Ler o conteúdo original do arquivo ou variável
-                with open('cadastro.html', 'r', encoding='utf-8') as file:
+                with open('cadastro_turma.html', 'r', encoding='utf-8') as file:
                     content = file.read()
 
                 # Substituir o marcador pela mensagem de erro
@@ -335,15 +399,17 @@ class MyHandler(SimpleHTTPRequestHandler):
 
         elif self.path.startswith('/cadastrar_atividade'):
             content_length =  int(self.headers['content-length'])
-
             body= self.rfile.read(content_length).decode('utf-8')
+            form_data = parse_qs(body, keep_blank_values=True)
+            
+            descAtividade = form_data.get('descAtividade', [''])[0]
+            id_atividade = form_data.get('id_atividade', [''])[0]
+            login = form_data.get('login', [''])[0]
+            
+            print(f"Cad_turma, dados do formulario {descAtividade}{id_atividade}")
 
-            from_data = parse_qs(body, keep_blank_values=True)
-
-            cod_atividade= from_data.get('codigo-atividade', [''])[0]
-            descricao = from_data.get('descricao', [''])[0]
-
-            if cod_atividade.strip()== '' or descricao.strip() == '':
+            # if cod_atividade.strip()== '' or descricao.strip() == '':
+            if descAtividade.strip() == '':
                 
                 mensagem_erro = "Os campos não foram preenchidos corretamente, tente novamente!"
                 self.send_response(200)
@@ -360,7 +426,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                 # Enviar a resposta com o conteúdo modificado
                 self.wfile.write(content.encode('utf-8'))
 
-            elif self.atividade_existente(descricao) == True:
+            elif self.atividade_existente(descAtividade) == True:
 
                 mensagem_erro = "Atividade já cadastrada, tente novamente com outros dados."
                 self.send_response(200)
@@ -371,20 +437,25 @@ class MyHandler(SimpleHTTPRequestHandler):
                 with open('cadastro_atividade.html', 'r', encoding='utf-8') as file:
                     content = file.read()
 
-                # Substituir o marcador pela mensagem de erro
-                content = content.replace('<!--Mensagem de erro inserida aqui-->', f'<div class="error-message">{mensagem_erro}</div>')
+                # # Substituir o marcador pela mensagem de erro
+                # content = content.replace('<!--Mensagem de erro inserida aqui-->', f'<div class="error-message">{mensagem_erro}</div>')
 
-                # Enviar a resposta com o conteúdo modificado
-                self.wfile.write(content.encode('utf-8'))
+                # # Enviar a resposta com o conteúdo modificado
+                # self.wfile.write(content.encode('utf-8'))
+                
+                self.carrega_turmas_professor(login)
             
             else:
                 # Se os campos estiverem preenchidos, adiciona a turma
-                self.adicionar_atividade(descricao)
+                # self.adicionar_atividade(descAtividade)
+                self.adicionar_atividades_professor(descAtividade,id_atividade)
+                self.carrega_turmas_professor(login)
+                print("Chegou")
                 
-                mensagem_erro = "Atividade cadastrada com sucesso!"
-                self.send_response(200)
-                self.send_header("Content-type", "text/html; charset=utf-8")
-                self.end_headers()
+                # mensagem_erro = "Atividade cadastrada com sucesso!"
+                # self.send_response(200)
+                # self.send_header("Content-type", "text/html; charset=utf-8")
+                # self.end_headers()
 
                 # Ler o conteúdo original do arquivo ou variável
                 with open('cadastro_atividade.html', 'r', encoding='utf-8') as file:
@@ -397,7 +468,7 @@ class MyHandler(SimpleHTTPRequestHandler):
                 self.wfile.write(content.encode('utf-8'))
                 
                 cursor = conexao.cursor()
-                cursor.execute("SELECT descricao FROM atividades WHERE descricao = %s", (descricao,))
+                cursor.execute("SELECT descricao FROM atividades WHERE descricao = %s", (login,))
                 resultado = cursor.fetchone()
                 
                 if resultado:
